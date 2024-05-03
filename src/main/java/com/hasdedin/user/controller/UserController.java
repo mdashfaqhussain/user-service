@@ -41,6 +41,7 @@ public class UserController {
 	@GetMapping("/test")
 	@PreAuthorize("hasRole('USER')")
     public List<String> getStringList() {
+		log.info("Inside stringList Method");
         List<String> stringList = new ArrayList<>();
         stringList.add("String 1");
         stringList.add("String 2");

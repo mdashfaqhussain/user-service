@@ -41,6 +41,7 @@ public class AuthenicationConfiguration {
 	    return httpSecurity.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/user/register", "/user/login").permitAll()
+                            .requestMatchers("/user/test").hasRole("USER") 
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -48,6 +49,7 @@ public class AuthenicationConfiguration {
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 	}
+
 
 	
 	

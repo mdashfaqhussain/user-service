@@ -22,10 +22,7 @@ public class CustomUserDetails implements UserDetails{
     public CustomUserDetails(BudgetUser userInfo) {
         name = userInfo.getName();
         password = userInfo.getPassword();
-        String rolesString = userInfo.getRoles();
-        authorities = rolesString != null ? Arrays.stream(rolesString.split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList()) : Collections.emptyList();
+        authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
