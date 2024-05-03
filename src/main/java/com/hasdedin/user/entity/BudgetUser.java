@@ -30,11 +30,7 @@ public class BudgetUser {
 	
 	private String password;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_role", 
-	    joinColumns = @JoinColumn(name = "userId"),  // Correctly references the BudgetUser entity
-	    inverseJoinColumns = @JoinColumn(name = "roleId"))
-	Set<BudgetRole> role = new HashSet<BudgetRole>();
+	private String roles;
 
 
 }

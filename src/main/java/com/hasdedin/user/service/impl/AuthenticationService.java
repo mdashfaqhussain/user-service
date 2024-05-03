@@ -13,7 +13,6 @@ import com.hasdedin.user.constants.ProjectContants;
 import com.hasdedin.user.dto.LoginUserdto;
 import com.hasdedin.user.dto.RegisterUserdto;
 import com.hasdedin.user.dto.ResponseModel;
-import com.hasdedin.user.entity.BudgetRole;
 import com.hasdedin.user.entity.BudgetUser;
 import com.hasdedin.user.repository.IUserRepository;
 import com.hasdedin.user.service.IAuthenticationService;
@@ -59,12 +58,8 @@ public class AuthenticationService implements IAuthenticationService {
 	            log.info(registerUserdto.getPassword());
 	            newuser.setPassword(encoder.encode(registerUserdto.getPassword()));
 	            log.info("Registered--------3");
-	            
-	            BudgetRole defaultRole = new BudgetRole();
-	            defaultRole.setRole("ROLE_USER");
-	            defaultRole.setRoleId(2);
-	            newuser.getRole().add(defaultRole);
 	            log.info("---------inside try"+newuser.toString());
+	            newuser.setRoles("USER");
 	            repository.save(newuser);
 	            log.info("Registered--------");
 	            ResponseModel model = new ResponseModel();
