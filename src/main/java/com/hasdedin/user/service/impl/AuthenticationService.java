@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.hasdedin.user.config.CustomUserDetailService;
 import com.hasdedin.user.config.exception.UserAlreadyExistsException;
 import com.hasdedin.user.constants.ProjectContants;
 import com.hasdedin.user.dto.LoginUserdto;
@@ -33,6 +35,8 @@ public class AuthenticationService implements IAuthenticationService {
 	@Autowired
 	private PasswordEncoder encoder;
 	
+	@Autowired
+	CustomUserDetailService customUserDetailService;
 
 	
 	@Autowired
@@ -49,19 +53,17 @@ public class AuthenticationService implements IAuthenticationService {
 	public ResponseEntity<ResponseModel> saveUser(RegisterUserdto registerUserdto) {
 		
 	    try {
-	    	log.info(repository.existsByName(registerUserdto.getName()).toString());
-	    	log.info("inside Service method");
+	    	
 	        if(!repository.existsByName(registerUserdto.getName())) {
-	        	log.info("Registered--------1");
+	        	
 	            BudgetUser newuser = Mapper.convertToBudgetUser(registerUserdto);
-	            log.info("Registered--------2"+newuser.toString());
-	            log.info(registerUserdto.getPassword());
+	           
+	            
 	            newuser.setPassword(encoder.encode(registerUserdto.getPassword()));
-	            log.info("Registered--------3");
-	            log.info("---------inside try"+newuser.toString());
+	           
 	            newuser.setRoles("USER");
 	            repository.save(newuser);
-	            log.info("Registered--------");
+	           
 	            ResponseModel model = new ResponseModel();
 	            model.setStatuscode(ProjectContants.USER_CREATED_STATUS_CODE);
 	            model.setStatus(ProjectContants.USER_CREATED_MESSAGE);
@@ -75,11 +77,11 @@ public class AuthenticationService implements IAuthenticationService {
 	            errorModel.setStatus(ProjectContants.USER_ALREADY_EXISTS_MESSAGE);
 	            errorModel.setMessage(ProjectContants.USER_ALREADY_EXISTS_MESSAGE);
 	            
-	            log.info("Inside Else");
+	          
 	            return responseUtility.createResponse(errorModel);
 	        }
 	    } catch (Exception e) {
-	        log.info("inside catch!!!");
+	     
 	        ResponseModel errorModel = new ResponseModel();
 	        errorModel.setStatuscode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	        errorModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
@@ -92,7 +94,8 @@ public class AuthenticationService implements IAuthenticationService {
 
 	@Override
 	public ResponseEntity<ResponseModel> loginUser(LoginUserdto loginUserdto) {
-		String token = jwtService.generateToken(loginUserdto.getName());
+		UserDetails userDetails = customUserDetailService.loadUserByUsername(loginUserdto.getName());
+	    String token = jwtService.generateToken(loginUserdto.getName(), userDetails.getAuthorities());
 		ResponseModel model = new ResponseModel();
 		model.setData(token);
 		model.setStatus(ProjectContants.USER_LOGIN_STATUS);

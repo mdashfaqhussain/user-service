@@ -20,9 +20,14 @@ public class CustomUserDetails implements UserDetails{
     private List<GrantedAuthority> authorities;
 
     public CustomUserDetails(BudgetUser userInfo) {
-        name = userInfo.getName();
-        password = userInfo.getPassword();
-        authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        this.name = userInfo.getName();
+        this.password = userInfo.getPassword();
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")); // Default role
+
+        // Check if the user is an admin and assign the admin role if true
+        if ("admin".equalsIgnoreCase(userInfo.getName())) {
+            this.authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
     }
 
     @Override
